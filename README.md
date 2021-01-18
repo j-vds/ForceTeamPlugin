@@ -6,7 +6,7 @@ There are no commands for normal players.
 
 ### Admin Only commands
 * `/forceteam [team/off] [transfer_players]` New players will be assigned to the selected team (resets after a game over). 
---> Usage:
+<br/>--> Usage:
   * `/forceteam crux` All new players will join team crux.
   * `/forceteam off`Back to normal mode
   * `/forceteam blue 1` All new players and current players except admins will be transferred to the blue team.
