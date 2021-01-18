@@ -1,12 +1,15 @@
 # ForceTeamPlugin
+*Compatible with the [TeamPlugin](https://github.com/J-VdS/TeamPlugin)*
+
 ### Commands
 There are no commands for normal players.
 
 ### Admin Only commands
-* `/spectate` Enter/leave spectate mode.
-
-### Previous version v5
-* ~~`/forceteam [team/off]` New players will be assigned to this team (resets after a game over)~~ It will be released if there is demand for it.
+* `/forceteam [team/off] [transfer_players]` New players will be assigned to the selected team (resets after a game over). 
+--> Usage:
+  * `/forceteam crux` All new players will join team crux.
+  * `/forceteam off`Back to normal mode
+  * `/forceteam blue 1` All new players and current players except admins will be transferred to the blue team.
 
 ### Important
 All commands are chatcommands.
@@ -16,7 +19,7 @@ This plugin isn't compatible with hexed!
 Open an issue if you have a suggestion.
 
 ### Releases
-Prebuild relases can be found [here](https://github.com/J-VdS/TeamPlugin/releases)
+Prebuild relases can be found [here](https://github.com/J-VdS/ForceTeamPlugin/releases)
 
 ### Building a Jar 
 
