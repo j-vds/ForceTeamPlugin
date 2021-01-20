@@ -131,8 +131,8 @@ public class ForceTeamPlugin extends Plugin {
                             Groups.player.forEach(p -> {
                                 if(!p.admin()){
                                     Call.setPlayerTeamEditor(p, setTeam);
-                                    player.team(setTeam);
-                                    player.unit().kill();
+                                    p.team(setTeam);
+                                    p.unit().kill();
                                 }
                             });
                         }
