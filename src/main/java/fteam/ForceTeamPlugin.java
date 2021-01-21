@@ -66,77 +66,104 @@ public class ForceTeamPlugin extends Plugin {
     @Override
     public void registerClientCommands(CommandHandler handler){
         handler.<Player>register("forceteam", "[team] [transfer_players]","[scarlet]Admin only[] For info use the command without arguments.", (args, player) -> {
-                    if (!Vars.state.rules.pvp) {
-                        player.sendMessage("[scarlet]Only possible in PVP mode.\n");
-                        return;
-                    }
+                if(!player.admin()){
+                    player.sendMessage("[scarlet]Admin only");
+                    return;
+                }
 
-                    if (args.length == 0 || args.length > 2) {
-                        StringBuilder sbinfo = new StringBuilder();
-                        sbinfo.append("[orange]/forceteam[] - INFO\n\nThis command will force new players to join a selected team.\n");
-                        sbinfo.append("[sky] arguments[]\n* [team] : selected team or [accent]off[] to disable\n");
-                        sbinfo.append("* [transfer_players] : (0 or 1) Transfer all current online players (except admins) to the selected team. Default: 0");
-                        sbinfo.append("\n\n[green]Auto disable after a game over![]");
-                        Call.infoMessage(player.con, sbinfo.toString());
+                if (!Vars.state.rules.pvp) {
+                    player.sendMessage("[scarlet]Only possible in PVP mode.\n");
+                    return;
+                }
+
+                if (args.length == 0 || args.length > 2) {
+                    StringBuilder sbinfo = new StringBuilder();
+                    sbinfo.append("[orange]/forceteam[] - INFO\n\nThis command will force new players to join a selected team.\n");
+                    sbinfo.append("[sky] arguments[]\n* [team] : selected team or [accent]off[] to disable\n");
+                    sbinfo.append("* [transfer_players] : (0 or 1) Transfer all current online players (except admins) to the selected team. Default: 0");
+                    sbinfo.append("\n\n[green]Auto disable after a game over![]");
+                    Call.infoMessage(player.con, sbinfo.toString());
+                    return;
+                }
+                Vars.state.rules.tags.put("forceTeam", "false");
+                // select team
+                switch (args[0]) {
+                    case "off":
+                        setTeam = null;
+                        Call.sendMessage(" [orange] forceTeam disabled");
+                        //randomize again?
                         return;
-                    }
-                    Vars.state.rules.tags.put("forceTeam", "false");
-                    // select team
-                    switch (args[0]) {
-                        case "off":
-                            setTeam = null;
-                            Call.sendMessage(" [orange] forceTeam disabled");
-                            //randomize again?
-                            return;
-                        case "sharded":
-                            setTeam = Team.sharded;
-                            break;
-                        case "blue":
-                            setTeam = Team.blue;
-                            break;
-                        case "crux":
-                            setTeam = Team.crux;
-                            break;
-                        case "derelict":
-                            setTeam = Team.derelict;
-                            break;
-                        case "green":
-                            setTeam = Team.green;
-                            break;
-                        case "purple":
-                            setTeam = Team.purple;
-                            break;
-                        default:
-                            setTeam = null;
-                            player.sendMessage("[scarlet]ABORT: Team not found[] - available teams:");
-                            for (int i = 0; i < 6; i++) {
-                                if (!Team.baseTeams[i].cores().isEmpty()) {
-                                    player.sendMessage(setTeam.baseTeams[i].name);
-                                }
+                    case "sharded":
+                        setTeam = Team.sharded;
+                        break;
+                    case "blue":
+                        setTeam = Team.blue;
+                        break;
+                    case "crux":
+                        setTeam = Team.crux;
+                        break;
+                    case "derelict":
+                        setTeam = Team.derelict;
+                        break;
+                    case "green":
+                        setTeam = Team.green;
+                        break;
+                    case "purple":
+                        setTeam = Team.purple;
+                        break;
+                    default:
+                        setTeam = null;
+                        player.sendMessage("[scarlet]ABORT: Team not found[] - available teams:");
+                        for (int i = 0; i < 6; i++) {
+                            if (!Team.baseTeams[i].cores().isEmpty()) {
+                                player.sendMessage(setTeam.baseTeams[i].name);
                             }
-                            return;
-                    }
-                    if (setTeam.cores().isEmpty()) {
-                        player.sendMessage("[scarlet]ABORT: The selected team has 0 cores...");
+                        }
+                        return;
+                }
+                if (setTeam.cores().isEmpty()) {
+                    player.sendMessage("[scarlet]ABORT: The selected team has 0 cores...");
+                    return;
+                }
+                Vars.state.rules.tags.put("forceTeam", "true");
+
+                if(args.length == 2){
+                    if (!Strings.canParseInt(args[1])) {
+                        player.sendMessage("[scarlet][transfer_players] should be 0 or 1");
                         return;
                     }
-                    Vars.state.rules.tags.put("forceTeam", "true");
-
-                    if (args.length == 2) {
-                        if (!Strings.canParseInt(args[1])) {
-                            player.sendMessage("[scarlet][transfer_players] should be 0 or 1");
-                            return;
-                        }
-                        if (Strings.parseInt(args[1]) == 1) {
-                            Groups.player.forEach(p -> {
-                                if(!p.admin()){
-                                    Call.setPlayerTeamEditor(p, setTeam);
-                                    p.team(setTeam);
-                                    p.unit().kill();
-                                }
-                            });
+                    if(Strings.parseInt(args[1]) == 1){
+                        for(Player p: Groups.player){
+                            if(!p.admin()){
+                                Call.setPlayerTeamEditor(p, setTeam);
+                                p.team(setTeam);
+                                p.snapSync();
+                                p.unit().kill();
+                            }
                         }
                     }
+                }
+        });
+
+        handler.<Player>register("ftt", "[scarlet]Admin only[] FORCE SWITCH", (args, player)->{
+            if(!player.admin()){
+                player.sendMessage("[scarlet] Admin only!");
+                return;
+            }
+            if(setTeam == null){
+                player.sendMessage("[orange] > no team was set!");
+            }else {
+                player.sendMessage(String.format("[green] > try to move all players (except admins) to %s", setTeam.name));
+
+                for (Player p : Groups.player) {
+                    if (!p.admin() && p.team() != setTeam) {
+                        Call.setPlayerTeamEditor(p, setTeam);
+                        p.team(setTeam);
+                        p.updateUnit();
+                        p.unit().kill();
+                    }
+                }
+            }
         });
     }
 }
