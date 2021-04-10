@@ -3,5 +3,5 @@
   "author": "Fishbuilder",
   "main": "fteam.ForceTeamPlugin",
   "description": "Force new players into a fixed team. [PVP]",
-  "version": 0.1
+  "version": 0.2
 }
