@@ -79,10 +79,10 @@ public class ForceTeamPlugin extends Plugin {
         Mods.LoadedMod temp = Vars.mods.list().find(m -> m.name.equalsIgnoreCase("teamplugin"));
         if(temp != null){
             if(Strings.parseDouble(temp.meta.version, 0) < TEAMPLUGINVERSION){
-                Log.err("<forceTeamPlugin> Teamplugin is outdated! Mininmum required version @ ", TEAMPLUGINVERSION);
+                Log.err("<forceteam> Teamplugin is outdated! Mininmum required version @ ", TEAMPLUGINVERSION);
             }
         }else{
-            Log.info("<forceTeamPlugin> Compatible with TeamPlugin @", TEAMPLUGINVERSION);
+            Log.info("<forceteam> Compatible with TeamPlugin @", TEAMPLUGINVERSION);
         }
     }
 
@@ -123,6 +123,7 @@ public class ForceTeamPlugin extends Plugin {
                     return;
                 }
                 //disable first
+                this.cmdRunner = null;
                 disableFT();
                 // select team
                 switch (args[0]) {
@@ -224,12 +225,12 @@ public class ForceTeamPlugin extends Plugin {
     private void disableFT(){
         this.setTeam = null;
         Vars.state.rules.tags.put("forceteam", "false");
-        Log.info(Vars.state.rules.tags.getBool("forceteam"));
+        Log.info(Strings.format("<forceteam> disabled (@)",Vars.state.rules.tags.getBool("forceteam")));
     }
 
     private void enableFT(){
         //this.setTeam = team;
         Vars.state.rules.tags.put("forceteam", "true");
-        Log.info(Vars.state.rules.tags.getBool("forceteam"));
+        Log.info(Strings.format("<forceteam> enabled (@)",Vars.state.rules.tags.getBool("forceteam")));
     }
 }
