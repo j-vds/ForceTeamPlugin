@@ -14,7 +14,7 @@ import mindustry.mod.Plugin;
 import mindustry.world.Tile;
 
 public class ForceTeamPlugin extends Plugin {
-    private double TEAMPLUGINVERSION = 6.3;
+    private double TEAMPLUGINVERSION = 6.126;
 
     private Team setTeam = null;
     private String cmdRunner = null; //uuid
